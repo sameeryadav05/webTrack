@@ -1,6 +1,7 @@
 import React from "react";
 import Galaxy from "../components/Galaxy";
 
+
 const LandingPage = () => {
   return (
     <div className="relative min-h-screen overflow-hidden bg-black text-white">
@@ -123,11 +124,13 @@ const LandingPage = () => {
             </div>
 
           {/* Heading */}
+     
           <h1 className="text-5xl md:text-7xl font-bold max-w-5xl leading-tight mt-10">
             Understand Every Visitor
             <br />
             In Real-Time.
           </h1>
+
 
           {/* Description */}
           <p className="text-gray-400 text-lg md:text-xl max-w-3xl mt-8 leading-9">
