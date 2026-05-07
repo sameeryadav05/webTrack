@@ -6,6 +6,7 @@ import {connectDb} from './src/config/db.js'
 import trackingRoutes from "./src/modules/Tracking/Tracking.routes.js";
 import cors from 'cors'
 import SiteRouter from "./src/modules/Sites/site.routes.js";
+import { connectRabbitMq } from "./src/config/rabbitmq.js";
 
 const app = express();
 
@@ -25,9 +26,12 @@ app.use(
 app.use("/track", trackingRoutes); // tracking routes
 app.use('/sites',SiteRouter) // site routes
 
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8080;
 
-connectDb().then(()=>{
+
+
+connectDb().then(async ()=>{
+    await connectRabbitMq('amqp://sameer:sameer_2005@localhost:5672');
     app.listen(PORT, () => {console.log(`server is running on http://localhost:${PORT}`)})
 })
 
