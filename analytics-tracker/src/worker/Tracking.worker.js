@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
 import {
   connectRabbitMq,
@@ -13,76 +13,32 @@ import Tracking from "../modules/Tracking/Tracking.model.js";
 import parseUserAgent from "../utils/parseUserAgent.js";
 
 import getLocation from "../utils/geoLocation.js";
+import { connectRedis, getRedisClient } from "../config/redis.js";
 
 const startWorker = async () => {
-
   try {
 
-    /*
-      CONNECT DATABASE
-    */
-
     await connectDb();
-
-    /*
-      CONNECT RABBITMQ
-    */
-   
-
     await connectRabbitMq('amqp://sameer:sameer_2005@localhost:5672');
-
-    /*
-      GET CHANNEL
-    */
+    await connectRedis();
 
     const channel = getChannel();
 
-    /*
-      ENSURE QUEUE EXISTS
-    */
-
     await channel.assertQueue(Queue);
 
-    console.log(
-      "Tracking Worker Started"
-    );
-
-    /*
-      CONSUME QUEUE
-    */
-
-    channel.consume(
-      Queue,
-
+    console.log("Tracking Worker Started");
+    channel.consume(Queue,
       async (message) => {
-
         if (!message) return;
-
         try {
+          const eventData = JSON.parse(message.content.toString());
 
-          /*
-            PARSE MESSAGE
-          */
+          console.log("EVENT RECEIVED:",eventData.eventType);
 
-          const eventData = JSON.parse(
-            message.content.toString()
-          );
 
-          console.log(
-            "EVENT RECEIVED:",
-            eventData.eventType
-          );
 
-          /*
-            USER AGENT
-          */
+          const userAgent = eventData.userAgent;
 
-          const userAgent =
-            eventData.userAgent;
-
-          /*
-            PARSE BROWSER INFO
-          */
 
           const parsedData = userAgent
             ? parseUserAgent(userAgent)
@@ -92,9 +48,6 @@ const startWorker = async () => {
                 device: "Unknown",
               };
 
-          /*
-            GEO LOOKUP
-          */
 
           const ip =
             eventData.ip || "::1";
@@ -102,9 +55,31 @@ const startWorker = async () => {
           const locationData =
             getLocation(ip);
 
-          /*
-            STORE EVENT
-          */
+
+          const redis = getRedisClient();
+          const ActiveVisitorKey = `site:${eventData.siteId}:active_vistors`;
+
+          if(eventData.eventType === 'pageview')
+          {
+            await redis.sAdd(
+              ActiveVisitorKey,
+              eventData.visitorId
+            )
+            console.log("VISITOR ADDED TO ACTIVE SET");
+          }
+
+          if(eventData.eventType === 'page_exit')
+          {
+            await redis.sRem(
+              ActiveVisitorKey,
+              eventData.visitorId
+            )
+            console.log("VISITOR REMOVED FROm ACTIVE SET");
+          }
+
+
+
+
 
           const savedEvent =
             await Tracking.create({
@@ -126,25 +101,16 @@ const startWorker = async () => {
                 locationData.city,
             });
 
-          console.log(
-            "EVENT SAVED:",
-            savedEvent.eventType
-          );
+          console.log("EVENT SAVED:",savedEvent.eventType);
 
-          /*
-            ACKNOWLEDGE MESSAGE
-          */
+
 
           channel.ack(message);
 
-        } catch (error) {
+        } 
+        catch (error) {
 
           console.log(error);
-
-          /*
-            REJECT MESSAGE
-          */
-
           channel.nack(message);
         }
       }
@@ -155,5 +121,6 @@ const startWorker = async () => {
     console.log(error);
   }
 };
+
 
 startWorker()

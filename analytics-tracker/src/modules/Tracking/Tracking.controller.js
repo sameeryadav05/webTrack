@@ -80,6 +80,8 @@ export const trackEvent = async (
 
     const body = req.body;
 
+    console.log(body.eventType);
+
     /*
       GET CHANNEL
     */

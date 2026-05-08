@@ -10,6 +10,7 @@ const siteSchema = new mongoose.Schema(
     domain: {
       type: String,
       required: true,
+      unique:true
     },
 
     siteId: {
@@ -21,6 +22,7 @@ const siteSchema = new mongoose.Schema(
     apiKey: {
       type: String,
       required: true,
+      unique:true
     },
   },
   {

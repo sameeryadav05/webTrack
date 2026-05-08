@@ -24,7 +24,7 @@ app.use(
 );
 
 app.use("/track", trackingRoutes); // tracking routes
-app.use('/sites',SiteRouter) // site routes
+app.use('/site',SiteRouter) // site routes
 
 const PORT = process.env.PORT || 8080;
 

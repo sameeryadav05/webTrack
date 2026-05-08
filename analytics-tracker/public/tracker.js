@@ -100,7 +100,7 @@
       const duration = Date.now() - startTime;
 
         const exitPayload = {
-          eventType: "session_end",
+          eventType: "page_exit",
 
           siteId,
           apiKey,
