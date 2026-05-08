@@ -27,6 +27,7 @@ const startWorker = async () => {
     /*
       CONNECT RABBITMQ
     */
+   
 
     await connectRabbitMq('amqp://sameer:sameer_2005@localhost:5672');
 
