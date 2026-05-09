@@ -8,12 +8,15 @@ export const createSite = async (req,res) => {
 
     const {siteName,domain,} = req.body;
 
+    const cleanDomain =
+  new URL(domain).origin;
+
     const newSite =
       await Site.create({
 
         siteName,
 
-        domain,
+        domain:cleanDomain,
 
         siteId:
           `site_${uuidv4()}`,
@@ -22,8 +25,15 @@ export const createSite = async (req,res) => {
           `key_${uuidv4()}`,
       });
 
-        const script =
-  `<script src="http://localhost:5000/tracker.js" data-site-id="${newSite.siteId}" data-api-key="${newSite.apiKey}"></script>`;
+                const script = `
+            <script
+                src="http://localhost:5000/tracker.js"
+                data-site-id="${newSite.siteId}"
+                data-api-key="${newSite.apiKey}"
+                >
+            </script>
+            `;
+
             console.log(script);
 
 
