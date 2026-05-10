@@ -7,6 +7,7 @@ import trackingRoutes from "./src/modules/Tracking/Tracking.routes.js";
 import cors from 'cors'
 import SiteRouter from "./src/modules/Sites/site.routes.js";
 import { connectRabbitMq } from "./src/config/rabbitmq.js";
+import AnalyticsRouter from "./src/modules/Analytics/Analyrics.routes.js";
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(
 
 app.use("/track", trackingRoutes); // tracking routes
 app.use('/site',SiteRouter) // site routes
+app.use('/analytics',AnalyticsRouter);
 
 const PORT = process.env.PORT || 8080;
 
