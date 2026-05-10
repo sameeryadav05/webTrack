@@ -1,11 +1,9 @@
 import React from 'react'
-import LandingPage from './pages/Landing.jsx'
+import AppRoutes from './routes/AppRoutes.jsx'
 
 const App = () => {
   return (
-    <>
-        <LandingPage />
-    </>
+    <AppRoutes />
   )
 }
 

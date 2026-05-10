@@ -1,178 +1,168 @@
-import React from "react";
-import Galaxy from "../components/Galaxy";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Activity, BarChart3, Zap, Shield, ChevronRight } from 'lucide-react';
+import { Button } from '../components/ui/Button';
 
+const Landing = () => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
 
-const LandingPage = () => {
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-black text-white">
-      
-      {/* Galaxy Background */}
-      <div className="absolute inset-0 z-0">
-        <Galaxy
-          mouseRepulsion
-          mouseInteraction
-          density={1}
-          glowIntensity={0.4}
-          saturation={0}
-          hueShift={140}
-          twinkleIntensity={0.4}
-          rotationSpeed={0.05}
-          repulsionStrength={2}
-          autoCenterRepulsion={0}
-          starSpeed={0.4}
-          speed={1}
-        />
-      </div>
+    <div className="min-h-screen bg-background text-foreground dark overflow-hidden selection:bg-primary/30">
+      {/* Background Gradients */}
+      <div className="fixed top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[150px] -z-10" />
+      <div className="fixed bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[150px] -z-10" />
 
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-black/50 z-[1]" />
+      {/* Navigation */}
+      <nav className="border-b border-border/50 bg-background/50 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary/20 p-2 rounded-lg border border-primary/30">
+              <Activity className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-xl font-bold tracking-tight">WebTrack</span>
+          </div>
+          <div className="flex gap-4 items-center">
+            <Link to="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              Sign in
+            </Link>
+            <Link to="/register">
+              <Button size="sm">Get Started</Button>
+            </Link>
+          </div>
+        </div>
+      </nav>
 
-      {/* Purple Glow */}
-      <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-violet-500/20 blur-[180px] rounded-full z-[2]" />
-
-      {/* Main Content */}
-      <div className="relative z-10">
-        
-        {/* Navbar */}
-<nav className="max-w-7xl mx-auto px-6 pt-5">
-  <div className="flex items-center justify-between border border-white/10 bg-white/5 backdrop-blur-xl rounded-xl px-5 py-3">
-    
-    {/* Logo */}
-    <div className="flex items-center gap-3">
-      
-      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center font-bold text-sm shadow-lg shadow-violet-500/20">
-        W
-      </div>
-
-      <div>
-        <h2 className="text-lg font-semibold leading-none">
-          WebTrack
-        </h2>
-
-        <p className="text-[11px] text-gray-400 mt-1">
-          Analytics Platform
-        </p>
-      </div>
-    </div>
-
-    {/* Navigation */}
-    <div className="hidden md:flex items-center gap-8 text-sm text-gray-300">
-      <a href="#" className="hover:text-white transition">
-        Features
-      </a>
-
-      <a href="#" className="hover:text-white transition">
-        Analytics
-      </a>
-
-      <a href="#" className="hover:text-white transition">
-        Pricing
-      </a>
-
-      <a href="#" className="hover:text-white transition">
-        Docs
-      </a>
-    </div>
-
-    {/* Actions */}
-    <div className="flex items-center gap-3">
-      
-      <button className="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">
-        Login
-      </button>
-
-      {/* <button className="bg-white text-black px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-200 transition">
-        Start Free
-      </button> */}
-    </div>
-  </div>
-</nav>
-
-        {/* Hero Section */}
-        <section className="flex flex-col items-center justify-center text-center px-6 pt-28">
+      {/* Hero Section */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-32">
+        <motion.div
+          className="text-center max-w-4xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-secondary/50 border border-border/50 text-sm font-medium mb-8 text-muted-foreground">
+            <Zap className="w-4 h-4 text-primary" />
+            <span>Introducing Realtime Analytics 2.0</span>
+          </motion.div>
           
-          {/* Badge */}
-            <div className="flex items-center gap-3 border border-white/10 bg-white/5 backdrop-blur-2xl rounded-full px-4 py-2 shadow-xl shadow-violet-500/5">
-              
-              {/* Pulse Dot */}
-              <div className="relative flex items-center justify-center">
-                <div className="w-2.5 h-2.5 rounded-full bg-violet-400"></div>
+          <motion.h1 variants={itemVariants} className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/70">
+            Analytics that work <br className="hidden md:block" /> at the speed of thought.
+          </motion.h1>
+          
+          <motion.p variants={itemVariants} className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
+            Privacy-first, real-time analytics for modern web applications. 
+            Track visitors, pageviews, and custom events without compromising user privacy.
+          </motion.p>
+          
+          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link to="/register">
+              <Button size="lg" className="h-12 px-8 text-base group">
+                Start tracking for free
+                <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            <Button size="lg" variant="outline" className="h-12 px-8 text-base bg-background/50 backdrop-blur-sm">
+              View live demo
+            </Button>
+          </motion.div>
+        </motion.div>
 
-                <div className="absolute w-2.5 h-2.5 rounded-full bg-violet-400 animate-ping opacity-40"></div>
+        {/* Mock Dashboard Preview */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8, type: "spring" }}
+          className="mt-20 relative"
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 top-1/2" />
+          <div className="rounded-xl border border-border/50 bg-card/40 backdrop-blur-xl shadow-2xl overflow-hidden p-2">
+            <div className="rounded-lg border border-border/50 bg-background/80 overflow-hidden">
+              <div className="h-12 border-b border-border/50 bg-secondary/50 flex items-center px-4 gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                <div className="w-3 h-3 rounded-full bg-green-500/80" />
               </div>
+              <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 opacity-80">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-32 rounded-lg bg-secondary/50 border border-border/50 p-6 space-y-4">
+                    <div className="h-4 w-24 bg-muted rounded" />
+                    <div className="h-8 w-16 bg-foreground/20 rounded" />
+                  </div>
+                ))}
+                <div className="col-span-1 md:col-span-2 h-64 rounded-lg bg-secondary/50 border border-border/50" />
+                <div className="col-span-1 h-64 rounded-lg bg-secondary/50 border border-border/50" />
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
-              {/* Text */}
-              <p className="text-sm text-gray-300 tracking-wide">
-                Real-time analytics platform now live
+        {/* Features Grid */}
+        <div className="mt-32 grid md:grid-cols-3 gap-8">
+          {[
+            {
+              icon: Activity,
+              title: "Real-time Monitoring",
+              description: "Watch your traffic come in real-time. See who is on your site right now and what they are doing."
+            },
+            {
+              icon: Shield,
+              title: "Privacy First",
+              description: "Cookieless tracking out of the box. Fully compliant with GDPR, CCPA and PECR regulations."
+            },
+            {
+              icon: BarChart3,
+              title: "Beautiful Insights",
+              description: "Clean, intuitive dashboards that give you the data you need without the clutter."
+            }
+          ].map((feature, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="p-6 rounded-2xl border border-border/50 bg-card/30 backdrop-blur-sm hover:bg-card/50 transition-colors"
+            >
+              <div className="w-12 h-12 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center mb-6">
+                <feature.icon className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {feature.description}
               </p>
-
-              {/* Small Arrow */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="w-4 h-4 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </div>
-
-          {/* Heading */}
-     
-          <h1 className="text-5xl md:text-7xl font-bold max-w-5xl leading-tight mt-10">
-            Understand Every Visitor
-            <br />
-            In Real-Time.
-          </h1>
-
-
-          {/* Description */}
-          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mt-8 leading-9">
-            Monitor live visitors, page views, traffic sources, sessions,
-            events, clicks, conversions and user behavior with one lightweight
-            tracking script.
+            </motion.div>
+          ))}
+        </div>
+      </main>
+      
+      {/* Footer */}
+      <footer className="border-t border-border/50 bg-background/80 backdrop-blur-xl mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Activity className="w-5 h-5 text-primary" />
+            <span className="font-semibold tracking-tight">WebTrack</span>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            © {new Date().getFullYear()} WebTrack. All rights reserved.
           </p>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-5 mt-12">
-            
-            <button className="bg-white text-black px-9 py-4 rounded-2xl font-semibold hover:bg-gray-200 transition shadow-2xl">
-              Start Tracking Free
-            </button>
-
-            <button className="border border-white/10 bg-white/5 backdrop-blur-xl px-9 py-4 rounded-2xl text-gray-300 hover:bg-white/10 hover:text-white transition">
-              View Live Dashboard
-            </button>
-          </div>
-
-          {/* Small Stats */}
-          <div className="flex flex-wrap items-center justify-center gap-10 mt-16 text-gray-400 text-sm">
-            
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-green-400"></div>
-              <span>Live Visitor Tracking</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-violet-400"></div>
-              <span>Real-Time Events</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-              <span>Privacy Friendly Analytics</span>
-            </div>
-          </div>
-        </section>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 };
 
-export default LandingPage;
+export default Landing;

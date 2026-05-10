@@ -32,17 +32,16 @@ export const getOverview = async (req,res)=>  // give totalPageViews ,unique vis
             }
         ])
 
-        const avgDuation = durationResult[0]?.avgDuration || 0;
+        const avgDuration = durationResult[0]?.avgDuration || 0;
 
-            res.status(200).json({
-                success: true,
-
-                analytics: {
-                    totalPageviews,
-                    uniqueVisitors:uniqueVisitors.length,
-                    avgDuration:Math.floor(avgDuration),
-                },
-            });
+        res.status(200).json({
+            success: true,
+            analytics: {
+                totalPageviews: TotalPageViews,
+                uniqueVisitors: UniqueVisitors.length,
+                avgDuration: Math.floor(avgDuration / 1000),
+            },
+        });
         
         
     } 

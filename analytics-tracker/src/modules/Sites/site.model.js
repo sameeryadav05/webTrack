@@ -2,6 +2,17 @@ import mongoose from "mongoose";
 
 const siteSchema = new mongoose.Schema(
   {
+
+      user: {
+        type:
+          mongoose.Schema.Types
+            .ObjectId,
+
+        ref: "User",
+
+        required: true,
+      },
+
     siteName: {
       type: String,
       required: true,

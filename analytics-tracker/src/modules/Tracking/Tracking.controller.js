@@ -78,7 +78,8 @@ export const trackEvent = async (
 
   try {
 
-    const body = req.body;
+    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const body = { ...req.body, ip };
 
     console.log(body.eventType);
 

@@ -57,7 +57,7 @@ const startWorker = async () => {
 
 
           const redis = getRedisClient();
-          const ActiveVisitorKey = `site:${eventData.siteId}:active_vistors`;
+          const ActiveVisitorKey = `site:${eventData.siteId}:active_visitors`;
 
           if(eventData.eventType === 'pageview')
           {

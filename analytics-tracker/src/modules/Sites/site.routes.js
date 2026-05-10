@@ -1,9 +1,12 @@
 import express from "express";
-import { createSite } from "./site.controller.js";
+import authMiddleware from "../../middlewares/auth.middleware.js";
+import { createSite ,getMySites} from "./site.controller.js";
 
 
 const SiteRouter = express.Router();
 
-SiteRouter.post("/", createSite);
+SiteRouter.post("/",authMiddleware,createSite);
+
+SiteRouter.get("/my-sites",authMiddleware,getMySites);
 
 export default SiteRouter;
