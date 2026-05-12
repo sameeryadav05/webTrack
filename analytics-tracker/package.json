@@ -5,9 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "concurrently \"node server.js\" \"node src/worker/Tracking.worker.js\"",
-    "dev": "nodemon server.js",
-    "worker": "node src/worker/Tracking.worker.js"
+    "start": "concurrently \"node server.js\" \"node src/worker/Tracking.worker.js\""
   },
   "keywords": [],
   "author": "",
