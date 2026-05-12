@@ -79,7 +79,7 @@ export const createSite =
 
       const script = `
 <script
-  src="https://web-track-ten.vercel.app/tracker.js"
+  src='https://webtrack-server.onrender.com/tracker.js'
   data-site-id="${newSite.siteId}"
   data-api-key="${newSite.apiKey}"
 ></script>
