@@ -10,6 +10,7 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { motion } from 'framer-motion';
+import { getBrowserIcon } from '../../lib/browserIcons';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#14b8a6'];
 
@@ -198,9 +199,34 @@ const Overview = () => {
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid #333', borderRadius: '8px' }}
-                        itemStyle={{ color: '#fff' }}
+                      <Tooltip
+                        content={({ active, payload }) => {
+                          if (!active || !payload?.length) return null;
+                          const p = payload[0];
+                          const row = p.payload ?? p;
+                          const name = row.name ?? p.name;
+                          const value = row.value ?? p.value;
+                          const Icon = getBrowserIcon(name);
+                          return (
+                            <div
+                              style={{
+                                backgroundColor: 'rgba(0,0,0,0.85)',
+                                border: '1px solid #333',
+                                borderRadius: 8,
+                                padding: '8px 12px',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                              }}
+                            >
+                              {Icon ? <Icon size={20} /> : null}
+                              <span>
+                                {name}: <strong>{value}</strong>
+                              </span>
+                            </div>
+                          );
+                        }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -209,13 +235,29 @@ const Overview = () => {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 mt-4">
-                {browserData.map((b, i) => (
-                  <div key={b.name} className="flex items-center gap-2 text-sm">
-                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }}></span>
-                    <span className="truncate">{b.name}</span>
-                    <span className="ml-auto font-medium">{b.value}</span>
-                  </div>
-                ))}
+                {browserData.map((b, i) => {
+                  const BrowserIcon = getBrowserIcon(b.name);
+                  return (
+                    <div key={b.name} className="flex items-center gap-2 text-sm min-w-0">
+                      {BrowserIcon ? (
+                        <BrowserIcon
+                          className="h-4 w-4 shrink-0"
+                          size={16}
+                          title={b.name}
+                          aria-hidden
+                        />
+                      ) : (
+                        <span
+                          className="w-3 h-3 rounded-full shrink-0"
+                          style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                          title={b.name}
+                        />
+                      )}
+                      <span className="truncate">{b.name}</span>
+                      <span className="ml-auto font-medium shrink-0">{b.value}</span>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
