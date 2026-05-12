@@ -4,9 +4,14 @@ import { motion, useReducedMotion } from 'framer-motion';
 import { Activity, BarChart3, Zap, Shield, ChevronRight } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { LandingBackdrop } from '../components/LandingBackdrop';
+import useAuthStore from '../store/useAuthStore';
+import { useAuthHydration } from '../hooks/useAuthHydration';
 
 const Landing = () => {
   const reduceMotion = useReducedMotion();
+  const hydrated = useAuthHydration();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const user = useAuthStore((s) => s.user);
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -73,16 +78,31 @@ const Landing = () => {
             </motion.div>
             <span className="text-xl font-bold tracking-tight">WebTrack</span>
           </motion.div>
-          <div className="flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Sign in
-            </Link>
-            <Link to="/register">
-              <Button size="sm">Get Started</Button>
-            </Link>
+          <div className="flex items-center gap-3 sm:gap-4">
+            {!hydrated ? (
+              <div className="h-9 w-36 animate-pulse rounded-md bg-muted/40" aria-hidden />
+            ) : isAuthenticated ? (
+              <>
+                <span className="hidden max-w-[140px] truncate text-sm text-muted-foreground sm:inline">
+                  {user?.name || user?.email}
+                </span>
+                <Link to="/dashboard/sites">
+                  <Button size="sm">Dashboard</Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Sign in
+                </Link>
+                <Link to="/register">
+                  <Button size="sm">Get Started</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </motion.nav>
@@ -126,23 +146,49 @@ const Landing = () => {
             variants={itemVariants}
             className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
-            <Link to="/register">
-              <motion.span
-                className="inline-block"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button size="lg" className="group h-12 px-8 text-base">
-                  Start tracking for free
-                  <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </motion.span>
-            </Link>
-            <motion.span whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
-              <Button size="lg" variant="outline" className="h-12 bg-background/50 px-8 text-base backdrop-blur-sm">
-                View live demo
-              </Button>
-            </motion.span>
+            {hydrated && isAuthenticated ? (
+              <>
+                <Link to="/dashboard/sites">
+                  <motion.span
+                    className="inline-block"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button size="lg" className="group h-12 px-8 text-base">
+                      Go to dashboard
+                      <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </motion.span>
+                </Link>
+                <Link to="/dashboard/sites/create">
+                  <motion.span whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
+                    <Button size="lg" variant="outline" className="h-12 bg-background/50 px-8 text-base backdrop-blur-sm">
+                      Add a site
+                    </Button>
+                  </motion.span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/register">
+                  <motion.span
+                    className="inline-block"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button size="lg" className="group h-12 px-8 text-base">
+                      Start tracking for free
+                      <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                  </motion.span>
+                </Link>
+                <motion.span whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">
+                  <Button size="lg" variant="outline" className="h-12 bg-background/50 px-8 text-base backdrop-blur-sm">
+                    View live demo
+                  </Button>
+                </motion.span>
+              </>
+            )}
           </motion.div>
         </motion.div>
 

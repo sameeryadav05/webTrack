@@ -60,12 +60,24 @@ const useAuthStore = create(
       logout: () => {
         set({ user: null, token: null, isAuthenticated: false, error: null });
       },
-      
-      clearError: () => set({ error: null })
+
+      clearError: () => set({ error: null }),
     }),
     {
-      name: 'auth-storage', // unique name
-      getStorage: () => localStorage, // (optional) by default, 'localStorage' is used
+      name: 'auth-storage',
+      getStorage: () => localStorage,
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated,
+      }),
+      merge: (persisted, current) => {
+        const next = { ...current, ...persisted };
+        if (next.token && next.user) {
+          next.isAuthenticated = true;
+        }
+        return next;
+      },
     }
   )
 );

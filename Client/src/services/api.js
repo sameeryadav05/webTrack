@@ -27,9 +27,14 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response && error.response.status === 401) {
-      // Clear store and redirect to login if unauthorized
+      // Avoid clearing session while auth is still rehydrating from localStorage
+      if (!useAuthStore.persist.hasHydrated()) {
+        return Promise.reject(error);
+      }
       useAuthStore.getState().logout();
-      window.location.href = '/login';
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

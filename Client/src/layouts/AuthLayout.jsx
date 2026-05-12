@@ -1,9 +1,18 @@
 import React from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Navigate, Outlet, Link } from 'react-router-dom';
 import { Activity } from 'lucide-react';
 import { motion } from 'framer-motion';
+import useAuthStore from '../store/useAuthStore';
+import { useAuthHydration } from '../hooks/useAuthHydration';
 
 const AuthLayout = () => {
+  const hydrated = useAuthHydration();
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  if (hydrated && isAuthenticated) {
+    return <Navigate to="/dashboard/sites" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden dark">
       {/* Background decoration */}
