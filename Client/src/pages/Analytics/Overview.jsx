@@ -117,6 +117,11 @@ const Overview = () => {
     fetchAnalytics();
   }, [siteId]);
 
+  const regionNames = useMemo(
+    () => new Intl.DisplayNames(['en'], { type: 'region' }),
+    []
+  );
+
   if (!siteId) {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh]">
@@ -143,11 +148,6 @@ const Overview = () => {
   };
 
   const { overview, browsers, countries, pages, activeVisitors } = data;
-
-  const regionNames = useMemo(
-    () => new Intl.DisplayNames(['en'], { type: 'region' }),
-    []
-  );
 
   // Transform data for charts
   const browserData = browsers.map(b => ({ name: b._id || 'Unknown', value: b.count }));
