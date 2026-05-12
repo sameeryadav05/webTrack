@@ -1,11 +1,12 @@
 import amqp from "amqplib";
 
+
 let channel;
 
 export const Queue = "tracking_events";
 
 export const connectRabbitMq = async (
-  url = "amqp://localhost"
+  url = "amqp://shubham:shubham@13.206.207.181:5672"
 ) => {
 
   try {

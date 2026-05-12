@@ -5,6 +5,8 @@ import {
   getChannel,
   Queue,
 } from "../config/rabbitmq.js";
+import dotenv from 'dotenv'
+dotenv.config()
 
 import { connectDb } from "../config/db.js";
 
@@ -19,7 +21,7 @@ const startWorker = async () => {
   try {
 
     await connectDb();
-    await connectRabbitMq('amqp://sameer:sameer_2005@localhost:5672');
+    await connectRabbitMq(process.env.RABBITMQ_URL);
     await connectRedis();
 
     const channel = getChannel();

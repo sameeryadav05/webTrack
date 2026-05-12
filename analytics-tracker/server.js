@@ -34,7 +34,7 @@ app.use('/auth',AuthRouter)
 const PORT = process.env.PORT || 8080;
 
 connectDb().then(async ()=>{
-    await connectRabbitMq('amqp://sameer:sameer_2005@localhost:5672');
+    await connectRabbitMq(process.env.RABBITMQ_URL);
     await connectRedis();
     app.listen(PORT, () => {console.log(`server is running on http://localhost:${PORT}`)})
 })
