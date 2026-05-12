@@ -66,7 +66,7 @@
       SEND PAGEVIEW
     */
 
-    await fetch("https://web-track-ten.vercel.app/track", {
+    await fetch("https://webtrack-server.onrender.com/track", {
       method: "POST",
 
       headers: {
@@ -119,7 +119,7 @@
 
       console.log("SESSION END SENT");
 
-      fetch("https://web-track-ten.vercel.app/track", {
+      fetch("https://webtrack-server.onrender.com/track", {
         method: "POST",
 
         headers: {
