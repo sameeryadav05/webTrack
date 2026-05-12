@@ -15,6 +15,7 @@ import Tracking from "../modules/Tracking/Tracking.model.js";
 import parseUserAgent from "../utils/parseUserAgent.js";
 
 import getLocation from "../utils/geoLocation.js";
+import { normalizeIpFromString } from "../utils/clientIp.js";
 import { connectRedis, getRedisClient } from "../config/redis.js";
 
 const startWorker = async () => {
@@ -52,7 +53,7 @@ const startWorker = async () => {
 
 
           const ip =
-            eventData.ip || "::1";
+            normalizeIpFromString(eventData.ip) || null;
 
           const locationData =
             getLocation(ip);

@@ -13,6 +13,8 @@ import AuthRouter from "./src/modules/Auth/auth.routes.js";
 
 const app = express();
 
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(express.text({ type: "text/plain" }));
 app.use(express.urlencoded({extended:true}))

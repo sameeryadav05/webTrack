@@ -70,6 +70,7 @@ import {
   getChannel,
   Queue,
 } from "../../config/rabbitmq.js";
+import { getClientIpFromRequest } from "../../utils/clientIp.js";
 
 export const trackEvent = async (
   req,
@@ -78,7 +79,7 @@ export const trackEvent = async (
 
   try {
 
-    const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+    const ip = getClientIpFromRequest(req);
     const body = { ...req.body, ip };
 
     console.log(body.eventType);

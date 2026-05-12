@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.16.0",
     "clsx": "^2.1.1",
+    "country-flag-icons": "^1.6.17",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
     "ogl": "^1.0.11",

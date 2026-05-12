@@ -1,16 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
-  PieChart, Pie, Cell, LineChart, Line, AreaChart, Area
+  PieChart, Pie, Cell
 } from 'recharts';
 import { Users, Eye, Clock, Activity, Globe, Monitor, MousePointerClick } from 'lucide-react';
+import * as FlagIcons from 'country-flag-icons/react/3x2';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../components/ui/Card';
 import { motion } from 'framer-motion';
 
 const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#14b8a6'];
+
+function isUnknownCountryId(rawId) {
+  if (rawId == null || rawId === '') return true;
+  const s = String(rawId).trim();
+  return s.toLowerCase() === 'unknown' || s === 'UnKnown';
+}
+
+function getCountryParts(rawId, regionNames) {
+  if (isUnknownCountryId(rawId)) {
+    return { code: null, label: 'Unknown', Flag: null };
+  }
+  const str = String(rawId).trim();
+  if (/^[A-Za-z]{2}$/.test(str)) {
+    const code = str.toUpperCase();
+    const Flag = FlagIcons[code] ?? null;
+    let label = code;
+    try {
+      label = regionNames?.of(code) || code;
+    } catch {
+      label = code;
+    }
+    return { code, label, Flag };
+  }
+  return { code: null, label: str, Flag: null };
+}
+
+function CountryYAxisTick({ x, y, payload, regionNames }) {
+  const { label, Flag } = getCountryParts(payload?.value, regionNames);
+  return (
+    <g transform={`translate(${x},${y})`}>
+      {Flag ? (
+        <g transform="translate(-102, -7)">
+          <Flag width={22} height={14} />
+        </g>
+      ) : null}
+      <text x={-10} y={0} dy={4} textAnchor="end" fill="#888" fontSize={12}>
+        {label}
+      </text>
+    </g>
+  );
+}
 
 const StatCard = ({ title, value, icon: Icon, delay }) => (
   <motion.div
@@ -102,9 +144,16 @@ const Overview = () => {
 
   const { overview, browsers, countries, pages, activeVisitors } = data;
 
+  const regionNames = useMemo(
+    () => new Intl.DisplayNames(['en'], { type: 'region' }),
+    []
+  );
+
   // Transform data for charts
   const browserData = browsers.map(b => ({ name: b._id || 'Unknown', value: b.count }));
-  const countryData = countries.map(c => ({ name: c._id || 'Unknown', views: c.count })).slice(0, 5);
+  const countryData = countries
+    .map((c) => ({ rawId: c._id, views: c.count }))
+    .slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -185,13 +234,46 @@ const Overview = () => {
               <div className="h-[300px] w-full">
                 {countryData.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={countryData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <BarChart data={countryData} layout="vertical" margin={{ top: 5, right: 30, left: 12, bottom: 5 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#333" horizontal={false} />
                       <XAxis type="number" stroke="#888" />
-                      <YAxis dataKey="name" type="category" width={100} stroke="#888" />
-                      <Tooltip 
-                        cursor={{fill: 'rgba(255,255,255,0.05)'}}
-                        contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid #333', borderRadius: '8px' }}
+                      <YAxis
+                        dataKey="rawId"
+                        type="category"
+                        width={148}
+                        stroke="#888"
+                        tick={(props) => (
+                          <CountryYAxisTick {...props} regionNames={regionNames} />
+                        )}
+                        tickLine={false}
+                        axisLine={{ stroke: '#444' }}
+                      />
+                      <Tooltip
+                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                        content={({ active, payload }) => {
+                          if (!active || !payload?.length) return null;
+                          const row = payload[0].payload;
+                          const { label, Flag } = getCountryParts(row.rawId, regionNames);
+                          return (
+                            <div
+                              style={{
+                                backgroundColor: 'rgba(0,0,0,0.85)',
+                                border: '1px solid #333',
+                                borderRadius: 8,
+                                padding: '8px 12px',
+                                color: '#fff',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                              }}
+                            >
+                              {Flag ? <Flag width={24} height={16} /> : null}
+                              <span>
+                                {label}: <strong>{row.views}</strong>
+                              </span>
+                            </div>
+                          );
+                        }}
                       />
                       <Bar dataKey="views" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
                     </BarChart>
