@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
+    "start": "concurrently \"node server.js\" \"node src/worker/Tracking.worker.js\"",
     "dev": "nodemon server.js",
     "worker": "node src/worker/Tracking.worker.js"
   },
@@ -19,6 +19,7 @@
   "dependencies": {
     "amqplib": "^1.0.5",
     "bcryptjs": "^3.0.3",
+    "concurrently": "^9.2.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
