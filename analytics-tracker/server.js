@@ -22,8 +22,9 @@ app.use(morgan('dev'))
 app.use(express.static('public'))
 app.use(
   cors({
-    origin: "*",
+    origin: "https://web-track-client.vercel.app",
     methods: ["GET", "POST","PUT","PATCH","DELETE"],
+    credentials:true
   })
 );
 
