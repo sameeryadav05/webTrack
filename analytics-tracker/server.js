@@ -32,7 +32,7 @@ app.use('/site',SiteRouter) // site routes
 app.use('/analytics',AnalyticsRouter);
 app.use('/auth',AuthRouter)
 
-app.use('/check',(req,res)=>{
+app.get('/check',(req,res)=>{
   res.json({
     message:'WebTrack Server Running',
     success:false
