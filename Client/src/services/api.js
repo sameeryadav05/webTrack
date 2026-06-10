@@ -2,7 +2,7 @@ import axios from 'axios';
 import useAuthStore from '../store/useAuthStore';
 
 const api = axios.create({
-  baseURL: 'https://web-track-five.vercel.app', // Backend server is on port 5000 according to .env
+  baseURL: 'https://webtrack-okd9.onrender.com', // Backend server is on port 5000 according to .env
 });
 
 // Request interceptor to add the auth token header to requests
