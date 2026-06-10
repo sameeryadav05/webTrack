@@ -32,6 +32,13 @@ app.use('/site',SiteRouter) // site routes
 app.use('/analytics',AnalyticsRouter);
 app.use('/auth',AuthRouter)
 
+app.use('/',(req,res)=>{
+  res.json({
+    message:'WebTrack Server Running',
+    success:false
+  })
+})
+
 const PORT = process.env.PORT || 8080;
 
 connectDb().then(async ()=>{
