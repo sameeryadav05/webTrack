@@ -1,12 +1,13 @@
 import amqp from "amqplib";
-
+import dotenv from 'dotenv'
+dotenv.config()
 
 let channel;
 
 export const Queue = "tracking_events";
 
 export const connectRabbitMq = async (
-  url = "amqp://shubham:shubham@13.206.207.181:5672"
+  url = process.env.RABBITMQ_URL
 ) => {
 
   try {

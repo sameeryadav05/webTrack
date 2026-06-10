@@ -65,8 +65,8 @@
     /*
       SEND PAGEVIEW
     */
-
-    await fetch("https://web-track-five.vercel.app/track", {
+// https://web-track-five.vercel.app/track
+    await fetch("http://localhost:5000/track", {
       method: "POST",
 
       headers: {
@@ -119,7 +119,7 @@
 
       console.log("SESSION END SENT");
 
-      fetch("https://web-track-five.vercel.app/track", {
+      fetch("http://localhost:5000/track", {
         method: "POST",
 
         headers: {

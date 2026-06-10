@@ -1,0 +1,47 @@
+services:
+  Rabbitmq:
+    image: rabbitmq:management
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=sameer_2005
+    ports:
+      - 15672:15672
+      - 5672:5672
+    restart: unless-stopped
+    container_name: webtrack-RabbitMQ
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  Redis:
+    image: redis/redis-stack-server:latest
+    container_name: Webtrack-Redis
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    environment:
+      - REDIS_ARGS=--requirepass sameer_2005
+    volumes:
+      - redis_data:/data
+
+  # backend:
+  #   build: ./analytics-tracker
+  #   ports:
+  #     - 5000:5000
+  #   container_name: webtrack_server
+  #   env_file:
+  #     - ./analytics-tracker/.env
+  #   depends_on:
+  #     - Rabbitmq
+  #     - Redis
+  #   command: ["npm", "start"]
+  #   restart: unless-stopped
+
+  # frontend:
+  #   build: ./Client
+  #   container_name: Webtrack_client
+  #   ports:
+  #     - 5173:80
+
+volumes:
+  redis_data:
+  rabbitmq_data:

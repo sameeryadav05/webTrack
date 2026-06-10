@@ -79,7 +79,7 @@ export const createSite =
 
       const script = `
 <script
-  src='https://web-track-five.vercel.app/tracker.js'
+  src='http://localhost:5000/tracker.js'
   data-site-id="${newSite.siteId}"
   data-api-key="${newSite.apiKey}"
 ></script>
