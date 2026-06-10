@@ -13,7 +13,7 @@ import AuthRouter from "./src/modules/Auth/auth.routes.js";
 
 const app = express();
 
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 app.use(express.json());
 app.use(express.text({ type: "text/plain" }));
@@ -32,7 +32,7 @@ app.use('/site',SiteRouter) // site routes
 app.use('/analytics',AnalyticsRouter);
 app.use('/auth',AuthRouter)
 
-app.use('/',(req,res)=>{
+app.use('/check',(req,res)=>{
   res.json({
     message:'WebTrack Server Running',
     success:false
