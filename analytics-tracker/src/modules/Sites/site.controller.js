@@ -79,7 +79,7 @@ export const createSite =
 
       const script = `
 <script
-  src='https://webtrack-okd9.onrender.com/tracker.js'
+  src='https://webtrack-ox8a.onrender.com/tracker.js'
   data-site-id="${newSite.siteId}"
   data-api-key="${newSite.apiKey}"
 ></script>
