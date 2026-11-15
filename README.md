@@ -7,8 +7,6 @@ WebTrack lets a site owner register a website, install a small JavaScript snippe
 <p align="center">
   <a href="https://webtrack.imsameer.me/"><strong>Live Dashboard</strong></a>
   &nbsp;·&nbsp;
-  <a href="https://webtrack-ox8a.onrender.com/check"><strong>API Health</strong></a>
-  &nbsp;·&nbsp;
   <a href="https://github.com/sameeryadav05/webTrack"><strong>Source Code</strong></a>
 </p>
 
