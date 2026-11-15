@@ -1,146 +1,222 @@
-import { v4 as uuidv4 } from "uuid";
+
+import crypto from "node:crypto";
 
 import Site from "./site.model.js";
 
 
-export const createSite =
-  async (req, res) => {
+/*
+  CREATE SITE
+*/
+
+export const createSite = async (req, res) => {
 
     try {
 
-      const {
-        siteName,
-        domain,
-      } = req.body;
+        const { siteName, domain } = req.body;
 
 
-      let cleanDomain;
+        // 1. VALIDATE INPUT
 
-          try {
-
-            cleanDomain =
-              new URL(domain).origin;
-
-          } catch {
-
-            return res.status(400)
-              .json({
+        if (!siteName || !siteName.trim()) {
+            return res.status(400).json({
                 success: false,
+                message: "Site name is required"
+            });
+        }
 
-                message:
-                  "Invalid domain URL",
-              });
-          }
+        if (!domain || !domain.trim()) {
+            return res.status(400).json({
+                success: false,
+                message: "Domain is required"
+            });
+        }
 
-      /*
-        CHECK EXISTING
-      */
 
-      const existingSite =
-        await Site.findOne({
-          domain:cleanDomain,
+        // 2. NORMALIZE AND VALIDATE DOMAIN
+
+        let cleanDomain;
+
+        try {
+
+            const rawDomain = domain.trim();
+
+            // Automatically add HTTPS if protocol is missing
+            const formattedDomain = /^https?:\/\//i.test(rawDomain)
+                ? rawDomain
+                : `https://${rawDomain}`;
+
+            const parsedUrl = new URL(formattedDomain);
+
+            // Allow only HTTP and HTTPS
+            if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+                throw new Error("Invalid protocol");
+            }
+
+            // Reject paths, query parameters and fragments
+            if (
+                parsedUrl.pathname !== "/" ||
+                parsedUrl.search ||
+                parsedUrl.hash ||
+                parsedUrl.username ||
+                parsedUrl.password
+            ) {
+                throw new Error("Invalid domain format");
+            }
+
+            // Normalize domain
+            cleanDomain = parsedUrl.origin.toLowerCase();
+
+        } catch (error) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Invalid domain URL. Enter a valid domain such as example.com"
+            });
+
+        }
+
+
+        // 3. CHECK EXISTING SITE
+
+        const existingSite = await Site.findOne({
+            domain: cleanDomain
         });
 
-      if (existingSite) {
+        if (existingSite) {
 
-        return res.status(400)
-          .json({
-            success: false,
+            return res.status(400).json({
+                success: false,
+                message: "This domain is already registered"
+            });
 
-            message:
-              "Site already exists",
-          });
-      }
+        }
 
-      /*
-        CREATE SITE
-      */
 
-      const newSite =
-        await Site.create({
+        // 4. GENERATE UNIQUE CREDENTIALS
 
-          user:
-            req.user._id,
+        const siteId = `site_${crypto.randomUUID()}`;
 
-          siteName,
+        const apiKey = `key_${crypto.randomUUID()}`;
 
-          domain:cleanDomain,
 
-          siteId:
-            `site_${crypto.randomUUID()}`,
+        // 5. CREATE SITE
 
-          apiKey:
-            `key_${crypto.randomUUID()}`,
+        const newSite = await Site.create({
+
+            user: req.user._id,
+
+            siteName: siteName.trim(),
+
+            domain: cleanDomain,
+
+            siteId,
+
+            apiKey
+
         });
 
-      /*
-        SCRIPT
-      */
 
-      const script = `
+        // 6. GENERATE TRACKING SCRIPT
+
+        const script = `
 <script
-  src='https://webtrack-ox8a.onrender.com/tracker.js'
-  data-site-id="${newSite.siteId}"
-  data-api-key="${newSite.apiKey}"
+    src="https://webtrack-ox8a.onrender.com/tracker.js"
+    data-site-id="${newSite.siteId}"
+    data-api-key="${newSite.apiKey}"
 ></script>
 `;
 
-      res.status(201).json({
-        success: true,
 
-        site: newSite,
+        // 7. SEND RESPONSE
 
-        script,
-      });
+        return res.status(201).json({
+
+            success: true,
+
+            message: "Site created successfully",
+
+            site: newSite,
+
+            script
+
+        });
+
 
     } catch (error) {
 
-      console.log(error);
+        console.error("Create Site Error:", error);
 
-      res.status(500).json({
-        success: false,
-        message:
-          error.message,
-      });
+
+        // Handle MongoDB duplicate key error
+
+        if (error.code === 11000) {
+
+            return res.status(409).json({
+
+                success: false,
+
+                message: "This domain is already registered"
+
+            });
+
+        }
+
+
+        return res.status(500).json({
+
+            success: false,
+
+            message: "Internal server error"
+
+        });
+
     }
+
 };
 
 
 
-export const getMySites =
-  async (req, res) => {
+/*
+  GET MY SITES
+*/
+
+export const getMySites = async (req, res) => {
 
     try {
 
-      /*
-        FIND USER SITES
-      */
+        // Find sites belonging to authenticated user
 
-      const sites =
-        await Site.find({
+        const sites = await Site.find({
 
-          user:
-            req.user._id,
+            user: req.user._id
+
+        }).sort({ createdAt: -1 });
+
+
+        return res.status(200).json({
+
+            success: true,
+
+            count: sites.length,
+
+            sites
+
         });
 
-      res.status(200).json({
-        success: true,
-
-        count:
-          sites.length,
-
-        sites,
-      });
 
     } catch (error) {
 
-      console.log(error);
+        console.error("Get My Sites Error:", error);
 
-      res.status(500).json({
-        success: false,
 
-        message:
-          error.message,
-      });
+        return res.status(500).json({
+
+            success: false,
+
+            message: "Failed to fetch sites"
+
+        });
+
     }
+
 };
