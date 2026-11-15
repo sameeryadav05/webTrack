@@ -1,129 +1,129 @@
-// import mongoose from "mongoose";
 
 import {
-  connectRabbitMq,
-  getChannel,
-  Queue,
+    getChannel,
+    Queue
 } from "../config/rabbitmq.js";
-import dotenv from 'dotenv'
-dotenv.config()
 
-import { connectDb } from "../config/db.js";
+import {
+    getRedisClient
+} from "../config/redis.js";
 
 import Tracking from "../modules/Tracking/Tracking.model.js";
 
 import parseUserAgent from "../utils/parseUserAgent.js";
 
 import getLocation from "../utils/geoLocation.js";
+
 import { normalizeIpFromString } from "../utils/clientIp.js";
-import { connectRedis, getRedisClient } from "../config/redis.js";
 
-const startWorker = async () => {
-  try {
 
-    await connectDb();
-    await connectRabbitMq(process.env.RABBITMQ_URL);
-    await connectRedis();
+export const startTrackingConsumer = async () => {
 
     const channel = getChannel();
 
     await channel.assertQueue(Queue);
 
-    console.log("Tracking Worker Started");
-    channel.consume(Queue,
-      async (message) => {
-        if (!message) return;
-        try {
-          const eventData = JSON.parse(message.content.toString());
+    await channel.prefetch(10);
 
-          console.log("EVENT RECEIVED:",eventData.eventType);
+    console.log("[Worker] Tracking consumer started");
+    console.log(`[Worker] Waiting for messages in ${Queue}`);
 
+    await channel.consume(
+        Queue,
 
+        async (message) => {
 
-          const userAgent = eventData.userAgent;
+            if (!message) return;
 
+            try {
 
-          const parsedData = userAgent
-            ? parseUserAgent(userAgent)
-            : {
-                browser: "Unknown",
-                os: "Unknown",
-                device: "Unknown",
-              };
+                const eventData = JSON.parse(
+                    message.content.toString()
+                );
 
+                console.log(
+                    "[Worker] Event received:",
+                    eventData.eventType
+                );
 
-          const ip =
-            normalizeIpFromString(eventData.ip) || null;
+                const userAgent = eventData.userAgent;
 
-          const locationData =
-            getLocation(ip);
+                const parsedData = userAgent
+                    ? parseUserAgent(userAgent)
+                    : {
+                        browser: "Unknown",
+                        os: "Unknown",
+                        device: "Unknown"
+                    };
 
+                const ip =
+                    normalizeIpFromString(eventData.ip) || null;
 
-          const redis = getRedisClient();
-          const ActiveVisitorKey = `site:${eventData.siteId}:active_visitors`;
+                const locationData = getLocation(ip);
 
-          if(eventData.eventType === 'pageview')
-          {
-            await redis.sAdd(
-              ActiveVisitorKey,
-              eventData.visitorId
-            )
-            console.log("VISITOR ADDED TO ACTIVE SET");
-          }
+                const redis = getRedisClient();
 
-          if(eventData.eventType === 'page_exit')
-          {
-            await redis.sRem(
-              ActiveVisitorKey,
-              eventData.visitorId
-            )
-            console.log("VISITOR REMOVED FROm ACTIVE SET");
-          }
+                const activeVisitorKey =
+                    `site:${eventData.siteId}:active_visitors`;
 
+                if (eventData.eventType === "pageview") {
 
+                    await redis.sAdd(
+                        activeVisitorKey,
+                        eventData.visitorId
+                    );
 
+                }
 
+                if (eventData.eventType === "page_exit") {
 
-          const savedEvent =
-            await Tracking.create({
+                    await redis.sRem(
+                        activeVisitorKey,
+                        eventData.visitorId
+                    );
 
-              ...eventData,
+                }
 
-              browser:
-                parsedData.browser,
+                const savedEvent = await Tracking.create({
 
-              os: parsedData.os,
+                    ...eventData,
 
-              device:
-                parsedData.device,
+                    browser: parsedData.browser,
 
-              country:
-                locationData.country,
+                    os: parsedData.os,
 
-              city:
-                locationData.city,
-            });
+                    device: parsedData.device,
 
-          console.log("EVENT SAVED:",savedEvent.eventType);
+                    country: locationData.country,
 
+                    city: locationData.city
 
+                });
 
-          channel.ack(message);
+                console.log(
+                    "[Worker] Event saved:",
+                    savedEvent.eventType
+                );
 
-        } 
-        catch (error) {
+                channel.ack(message);
 
-          console.log(error);
-          channel.nack(message);
+            } catch (error) {
+
+                console.error(
+                    "[Worker] Event processing failed:",
+                    error
+                );
+
+                channel.nack(message, false, true);
+
+            }
+
+        },
+
+        {
+            noAck: false
         }
-      }
+
     );
 
-  } catch (error) {
-
-    console.log(error);
-  }
 };
-
-
-startWorker()
