@@ -13,5 +13,6 @@ export async function connectDb()
     } 
     catch (error) {
         console.log("Failed to connect to DB");
+        throw error;
     }
 }

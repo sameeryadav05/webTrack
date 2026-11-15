@@ -23,7 +23,7 @@ export const connectRabbitMq = async (
     console.log(
       "Failed to Connect RabbitMQ"
     );
-
+    throw error;
     console.log(error);
   }
 };
